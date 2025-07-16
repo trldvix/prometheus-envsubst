@@ -17,7 +17,7 @@ scrape_configs:
     scheme: 'http'
     scrape_interval: 15s
     static_configs:
-      - targets: [ '${ENV_TARGET}' ]
+      - targets: [ 'localhost:8080' ]
         labels:
           application: "app"
     basic_auth:
