@@ -1,0 +1,49 @@
+## About
+This Docker image extends the official `prom/prometheus:latest` image by providing a mechanism to template `prometheus.yml` and `web.yml` configuration files using environment variables at container startup. This allows for dynamic configuration of your Prometheus instance without needing to rebuild the image.
+
+
+## Usage
+
+### 1. Prepare Configuration Templates
+
+Create your` prometheus.yml.template` and `web.yml.template` files in your project directory. These files should contain placeholders for environment variables in the format `${YOUR_VARIABLE}`.
+
+ Example `prometheus.yml.template`:
+
+```yaml
+scrape_configs:
+  - job_name: 'prometheus'
+    metrics_path: '/prometheus'
+    scheme: 'http'
+    scrape_interval: 15s
+    static_configs:
+      - targets: [ '${ENV_TARGET}' ]
+        labels:
+          application: "app"
+    basic_auth:
+      username: ${APP_USERNAME}
+      password: ${APP_PASSWORD}
+```
+
+Example `web.yml.template` (optional, if you need web configuration):
+```yaml
+global:
+  basic_auth_users:
+    admin: ${PROMETHEUS_PASSWORD}
+```
+
+### 2. Run with Docker Command 
+You can pass environment variables directly to the docker run command using the -e flag. Remember to mount your template files.
+```shell
+docker run -d \
+  -p 9090:9090 \
+  -v ./prometheus.yml.template:/etc/prometheus/prometheus.yml.template \
+  -v ./web.yml.template:/etc/prometheus/web.yml.template \
+  -e APP_USERNAME=admin \
+  -e APP_PASSWORD=admin \
+  -e PROMETHEUS_PASSWORD=admin \
+  --name prometheus-envsubst \
+  ghcr.io/trldvix/prometheus-envsubst:latest \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --web.config.file=/etc/prometheus/web.yml
+```
