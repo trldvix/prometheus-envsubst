@@ -32,8 +32,8 @@ global:
     admin: ${PROMETHEUS_PASSWORD}
 ```
 
-### 2. Run with Docker Command 
-You can pass environment variables directly to the docker run command using the -e flag. Remember to mount your template files.
+### 2. Docker
+Remember to mount your template files.
 ```shell
 docker run -d \
   -p 9090:9090 \
@@ -46,4 +46,28 @@ docker run -d \
   ghcr.io/trldvix/prometheus-envsubst:latest \
   --config.file=/etc/prometheus/prometheus.yml \
   --web.config.file=/etc/prometheus/web.yml
+```
+
+### 3. Docker Compose
+```yaml
+services:
+  prometheus:
+    image: ghcr.io/trldvix/prometheus-envsubst:latest
+    #Get variables from the .env file
+    env_file:
+      - .env
+    #Or import variables directly
+    environment:
+      APP_USERNAME=admin
+      APP_PASSWORD=admin
+      PROMETHEUS_PASSWORD=admin
+    #Mount templates
+    volumes:
+      - ./prometheus/prometheus.yml.template:/etc/prometheus/prometheus.yml.template
+      - ./prometheus/web.yml.template:/etc/prometheus/web.yml.template
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.config.file=/etc/prometheus/web.yml"
+    ports:
+      - '9090:9090'
 ```
