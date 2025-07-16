@@ -1,5 +1,5 @@
 ## About
-This Docker image extends the official `prom/prometheus:latest` image by providing a mechanism to template `prometheus.yml` and `web.yml` configuration files using environment variables at container startup. This allows for dynamic configuration of your Prometheus instance without needing to rebuild the image.
+This Docker image extends the official `prom/prometheus:latest` image by providing a way to template `prometheus.yml` and `web.yml` configuration files using environment variables.
 
 
 ## Usage
